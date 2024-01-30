@@ -2,7 +2,7 @@
 
 class HashMap {
   constructor() {
-    this.buckets = [];    
+    this.buckets = new Array(16);    
     this.length = 0;
   }
 
@@ -19,25 +19,50 @@ class HashMap {
 
   set(key, value) {
     const index = this.hash(key);
-    let node = this.buckets[index];
-    let pair = { key: value}
+    let linkedList = this.buckets[index];
+    let pair = {};
 
-    if (node === undefined) {
-      node = new LinkedList();
-      node.append(pair);
-      this.buckets[index] = node;
+
+    if (!linkedList) {
+      linkedList = new LinkedList();
+      pair[key] = value;
+      linkedList.append(pair);
+      this.buckets[index] = linkedList;
       this.length++;
       return;
     }
+
+    // if the key already exists, override the old value
+    let currentNode = linkedList.head;
+    while (currentNode) {
+      if (currentNode.value.key === key) {
+        currentNode.value.value = value;
+        return;
+      }
+      currentNode = currentNode.next;
+    }
     
-    node.append(pair)
+    pair[key] = value;
+    linkedList.append(pair)
     this.length++;
     return;
   }
 
   get(key) {
     const index = this.hash(key);
-      
+    const linkedList = this.buckets[index];
+
+    if (!linkedList) return null;
+
+    let currentNode = linkedList.head;
+    while (currentNode) {
+      if (currentNode.value.key === key) {
+        return currentNode.value.value;
+      }
+      currentNode = currentNode.next;
+    }  
+
+    return null;
   }
 
   has(key) {
