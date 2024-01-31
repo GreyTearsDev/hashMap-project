@@ -9,17 +9,36 @@ const LinkedList = require("./linked-list");
  */
 class HashMap {
   /**
-   * Creates a new instance of HashMap.
-   * @constructor
+   * Initializes a new instance of the HashMap class.
+   * @param {number} [initialCapacity=16] - The initial capacity of the hash map.
+   * @param {number} [loadFactor=0.75] - The load factor threshold for resizing the hash map.
    */
-  constructor() {
-    this.numBuckets = 16;
+  constructor(initialCapacity = 16, loadFactor = 0.75) {
+    /**
+     * The number of buckets in the hash map.
+     * @type {number}
+     */
+    this.numBuckets = initialCapacity;
 
+    /**
+     * An array of linked lists used as buckets for storing key-value pairs.
+     * @type {LinkedList[]}
+     */
     this.buckets = new Array(this.numBuckets)
       .fill(null)
       .map(() => new LinkedList());
+
+    /**
+     * The current number of key-value pairs stored in the hash map.
+     * @type {number}
+     */
     this.bucketsLength = 0;
-    this.DEFAULT_LOAD_FACTOR = 0.75;
+
+    /**
+     * The default load factor threshold for resizing the hash map.
+     * @type {number}
+     */
+    this.DEFAULT_LOAD_FACTOR = loadFactor;
   }
 
   /**
