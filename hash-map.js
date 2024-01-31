@@ -2,184 +2,19 @@
 
 const LinkedList = require("./linked-list");
 
-// /*====================LINKED LIST IMPLEMENTATION===============*/
-// class LinkedList {
-//   constructor() {
-//     this.head = null;
-//     this.tail = null;
-//     this.listSize = 0;
-//     this.currentNode = null;
-//   }
-
-//   append(value) {
-//     let newNode = new Node(value);
-
-//     if (this.listSize === 0) {
-//       this.head = newNode;
-//       this.tail = newNode;
-//       this.currentNode = newNode;
-//     } else {
-//       this.currentNode.next = newNode;
-//       this.currentNode = newNode;
-//     }
-
-//     this.listSize++;
-//   }
-
-//   prepend(value) {
-//     let newNode = new Node(value);
-
-//     this.head = newNode;
-
-//     if (this.listSize !== 0) {
-//       newNode.next = this.currentNode;
-//     } else {
-//       this.tail = newNode;
-//     }
-
-//     this.currentNode = newNode;
-//     this.listSize++;
-//   }
-
-//   size() {
-//     return this.listSize;
-//   }
-
-//   head() {
-//     return this.head;
-//   }
-
-//   tail() {
-//     return this.tail;
-//   }
-
-//   at(index) {
-//     if (index < 0 || index >= this.listSize) return null;
-
-//     let currentNode = this.head;
-
-//     for (let i = 0; i < index; i++) {
-//       currentNode = currentNode.next;
-//     }
-
-//     return currentNode;
-//   }
-
-//   pop() {
-//     if (this.listSize === 0) return false;
-
-//     let currentNode = this.head;
-
-//     if (this.listSize === 1) {
-//       this.head = null;
-//       this.tail = null;
-//       this.listSize--;
-//       return true;
-//     }
-
-//     while (currentNode.next.next !== null) {
-//       currentNode = currentNode.next;
-//     }
-
-//     currentNode.next = null;
-//     this.tail = currentNode;
-//     this.listSize--;
-//     return true;
-//   }
-
-//   contains(value) {
-//     return this.find(value) === null ? false : true;
-//   }
-
-//   find(value) {
-//     let index = 0;
-//     let currentNode = this.head;
-
-//     while (currentNode) {
-//       if (currentNode.value === value) return index;
-//       currentNode = currentNode.next;
-//       index++;
-//     }
-
-//     return null;
-//   }
-
-//   toString() {
-//     if (this.listSize === 0) return "";
-
-//     let string = "";
-//     let currentNode = this.head;
-
-//     while (currentNode !== null) {
-//       string = string.concat(currentNode.value);
-//       if (currentNode.next !== null) {
-//         string = string.concat(" -> ");
-//       }
-//       currentNode = currentNode.next;
-//     }
-
-//     return string;
-//   }
-
-//   insertAt(value, index) {
-//     if (index <= 0) {
-//       this.prepend(value);
-//       this.listSize++;
-//       return true;
-//     }
-
-//     if (index + 1 >= this.listSize) {
-//       this.append(value);
-//       this.listSize++;
-//       return true;
-//     }
-
-//     let newNode = new Node(value);
-//     let theNodeBefore = this.at(index);
-//     let theNodeAfter = this.at(index + 1);
-
-//     theNodeBefore.next = newNode;
-//     newNode.next = theNodeAfter;
-
-//     this.listSize++;
-//     return true;
-//   }
-
-//   removeAt(index) {
-//     if (index < 0 || index >= this.listSize) return false;
-//     if (index === 0) {
-//       this.head = this.head.next;
-//       this.listSize--;
-//       return true;
-//     }
-
-//     let targetNode = this.at(index);
-//     let theNodeBefore = this.at(index - 1);
-
-//     if (targetNode === this.tail) {
-//       theNodeBefore.next = null;
-//       this.tail = targetNode;
-//       this.listSize--;
-//       return true;
-//     }
-
-//     theNodeBefore.next = targetNode.next;
-//     this.listSize--;
-//     return true;
-//   }
-// }
-
-// class Node {
-//   constructor(value) {
-//     this.value = value;
-//     this.next = null;
-//   }
-// }
-
-//===========HASH-MAP IMPLEMENTATION=============//
+/**
+ * HashMap class represents a hash map data structure that stores key-value pairs.
+ * It provides methods for adding, removing, and retrieving key-value pairs,
+ * as well as other utility methods such as clearing the map, getting keys, values, and entries.
+ */
 class HashMap {
+  /**
+   * Creates a new instance of HashMap.
+   * @constructor
+   */
   constructor() {
     this.numBuckets = 16;
+
     this.buckets = new Array(this.numBuckets)
       .fill(null)
       .map(() => new LinkedList());
@@ -187,6 +22,11 @@ class HashMap {
     this.DEFAULT_LOAD_FACTOR = 0.75;
   }
 
+  /**
+   * Generates a hash code for the given key.
+   * @param {string} key - The key to generate the hash code for.
+   * @returns {number} The hash code for the key.
+   */
   hash(key) {
     let hashCode = 0;
     const PRIME_NUMBER = 31;
@@ -198,6 +38,9 @@ class HashMap {
     return hashCode;
   }
 
+  /**
+   * Rehashes the hash map when the load factor exceeds the default load factor.
+   */
   rehash() {
     let temp = this.buckets;
     this.numBuckets *= 2; // double the size of the current array;
@@ -216,15 +59,25 @@ class HashMap {
     }
   }
 
+  /**
+   * Calculates the bucket index for the given key.
+   * @param {string} key - The key to calculate the bucket index for.
+   * @returns {number} The bucket index.
+   */
   getBucketInd(key) {
     return this.hash(key.toString()) % this.numBuckets;
   }
 
+  /**
+   * Adds or updates a key-value pair in the hash map.
+   * @param {string} key - The key of the pair to add or update.
+   * @param {*} value - The value of the pair to add or update.
+   */
   set(key, value) {
     const index = this.getBucketInd(key);
     let linkedList = this.buckets[index];
 
-    if (this.loadFactor() > this.DEFAULT_LOAD_FACTOR) {
+    if (this.getLoadFactor() > this.DEFAULT_LOAD_FACTOR) {
       this.rehash();
     }
 
@@ -242,10 +95,19 @@ class HashMap {
     this.bucketsLength++;
   }
 
-  loadFactor() {
+  /**
+   * Calculates the load factor of the hash map.
+   * @returns {number} The load factor.
+   */
+  getLoadFactor() {
     return this.bucketsLength / this.numBuckets;
   }
 
+  /**
+   * Retrieves the value associated with the given key.
+   * @param {string} key - The key to retrieve the value for.
+   * @returns {*} The value associated with the key, or null if not found.
+   */
   get(key) {
     const index = this.getBucketInd(key);
     const linkedList = this.buckets[index];
@@ -259,6 +121,11 @@ class HashMap {
     return null;
   }
 
+  /**
+   * Checks if the hash map contains the given key.
+   * @param {string} key - The key to check for existence.
+   * @returns {boolean} True if the key exists, otherwise false.
+   */
   has(key) {
     const index = this.getBucketInd(key);
     const linkedList = this.buckets[index];
@@ -267,6 +134,11 @@ class HashMap {
     return linkedList.contains(key);
   }
 
+  /**
+   * Removes the key-value pair associated with the given key from the hash map.
+   * @param {string} key - The key of the pair to remove.
+   * @returns {boolean} True if the pair was removed successfully, otherwise false.
+   */
   remove(key) {
     if (!this.has(key)) return false;
 
@@ -278,10 +150,17 @@ class HashMap {
     this.bucketsLength--;
   }
 
+  /**
+   * Retrieves the number of key-value pairs in the hash map.
+   * @returns {number} The number of key-value pairs.
+   */
   length() {
     return this.bucketsLength;
   }
 
+  /**
+   * Clears all key-value pairs from the hash map.
+   */
   clear() {
     this.numBuckets = 16;
     this.buckets = new Array(this.numBuckets)
@@ -290,6 +169,10 @@ class HashMap {
     this.bucketsLength = 0;
   }
 
+  /**
+   * Retrieves an array containing all keys in the hash map.
+   * @returns {Array} An array containing all keys.
+   */
   keys() {
     const keys = [];
     const buckets = this.buckets;
@@ -309,6 +192,10 @@ class HashMap {
     return keys;
   }
 
+  /**
+   * Retrieves an array containing all values in the hash map.
+   * @returns {Array} An array containing all values.
+   */
   values() {
     const values = [];
     const buckets = this.buckets;
@@ -328,6 +215,10 @@ class HashMap {
     return values;
   }
 
+  /**
+   * Retrieves an array containing all key-value pairs in the hash map.
+   * @returns {Array} An array containing all key-value pairs.
+   */
   entries() {
     const entries = [];
     const buckets = this.buckets;
