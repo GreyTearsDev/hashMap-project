@@ -1,115 +1,19 @@
 'use strict'
 
-class HashMap {
-  constructor() {
-    this.buckets = new Array(16);    
-    this.length = 0;
-  }
-
-  hash(key) {
-    let hashCode = 0;
-    const PRIME_NUMBER = 31;
-
-    for (let i = 0; i < key.length; i++) {
-      hashCode = PRIME_NUMBER * hashCode + key.charCodeAt(i);
-    }
-    
-    return hashCode % this.buckets.length;
-  }
-
-  set(key, value) {
-    const index = this.hash(key);
-    let linkedList = this.buckets[index];
-    let pair = {};
-
-
-    if (!linkedList) {
-      linkedList = new LinkedList();
-      pair[key] = value;
-      linkedList.append(pair);
-      this.buckets[index] = linkedList;
-      this.length++;
-      return;
-    }
-
-    // if the key already exists, override the old value
-    let currentNode = linkedList.head;
-    while (currentNode) {
-      if (currentNode.value.key === key) {
-        currentNode.value.value = value;
-        return;
-      }
-      currentNode = currentNode.next;
-    }
-    
-    pair[key] = value;
-    linkedList.append(pair)
-    this.length++;
-    return;
-  }
-
-  get(key) {
-    const index = this.hash(key);
-    const linkedList = this.buckets[index];
-
-    if (!linkedList) return null;
-
-    let currentNode = linkedList.head;
-    while (currentNode) {
-      if (currentNode.value.key === key) {
-        return currentNode.value.value;
-      }
-      currentNode = currentNode.next;
-    }  
-
-    return null;
-  }
-
-  has(key) {
-    
-  }
-
-  remove(key) {
-    
-  }
-
-  length() {
-    
-  }
-
-  clear() {
-    
-  }
-
-  keys() {
-    
-  }
-
-  values() {
-    
-  }
-
-  entries() {
-    
-  }
-}
-
-
-
 
 /*====================LINKED LIST IMPLEMENTATION===============*/
 class LinkedList {
   constructor() {
     this.head = null;
     this.tail = null;
-    this.size = 0;   
+    this.listSize = 0;   
     this.currentNode = null;  
   }
 
   append(value) {
     let newNode = new Node(value);
     
-    if (this.size === 0) {
+    if (this.listSize === 0) {
       this.head = newNode;
       this.tail = newNode;
       this.currentNode = newNode;
@@ -118,7 +22,7 @@ class LinkedList {
       this.currentNode = newNode;
     }
     
-    this.size++;
+    this.listSize++;
   }
 
   prepend(value) {
@@ -126,18 +30,18 @@ class LinkedList {
 
     this.head = newNode; 
     
-    if (this.size !== 0) {
+    if (this.listSize !== 0) {
       newNode.next = this.currentNode;
     } else {
       this.tail = newNode;
     }
     
     this.currentNode = newNode;
-    this.size++;
+    this.listSize++;
   };
 
   size() {
-    return this.size;
+    return this.listSize;
   }
 
   head() {
@@ -149,7 +53,7 @@ class LinkedList {
   }
 
   at(index) {
-    if (index < 0 || index >= this.size) return undefined;
+    if (index < 0 || index >= this.listSize) return null;
 
     let currentNode = this.head;
     
@@ -163,14 +67,14 @@ class LinkedList {
   
 
   pop() {
-    if (this.size === 0) return false;
+    if (this.listSize === 0) return false;
 
     let currentNode = this.head;
 
-    if (this.size === 1) {
+    if (this.listSize === 1) {
       this.head = null;
       this.tail = null;
-      this.size--;
+      this.listSize--;
       return true;
     }
     
@@ -180,7 +84,7 @@ class LinkedList {
       
     currentNode.next = null;
     this.tail = currentNode;
-    this.size--;
+    this.listSize--;
     return true;
   }
 
@@ -190,11 +94,10 @@ class LinkedList {
 
   find(value) {
     let index = 0;
-    let currentNode = this.currentNode;
+    let currentNode = this.head;
     
-    while (currentNode !== null) {
+    while (currentNode) {
       if (currentNode.value === value) return index;
-
       currentNode = currentNode.next;
       index++;
     }
@@ -203,7 +106,7 @@ class LinkedList {
   }
 
   toString() {
-    if (this.size === 0) return '';
+    if (this.listSize === 0) return '';
     
     let string = '';
     let currentNode = this.head;
@@ -222,16 +125,10 @@ class LinkedList {
   insertAt(value, index) {
     if (index <= 0) {
       this.prepend(value);
-      this.size++;
+      this.listSize++;
       return true;
     }
     
-    if (index === this.size || index > this.size) {
-      this.append(value);
-      this.size++;
-      return true;
-    } 
-
     let newNode = new Node(value);
     let theNodeBefore = this.at(index);
     let theNodeAfter = this.at(index + 1);
@@ -239,16 +136,16 @@ class LinkedList {
     theNodeBefore.next = newNode;
     newNode.next = theNodeAfter;
 
-    this.size++;
+    this.listSize++;
     return true;
   }
   
 
   removeAt(index) {
-    if (index < 0 || index >= this.size) return false;
+    if (index < 0 || index >= this.listSize) return false;
     if (index === 0) {
       this.head = this.head.next;
-      this.size--;
+      this.listSize--;
       return true;
     }
 
@@ -258,12 +155,12 @@ class LinkedList {
     if (targetNode === this.tail) {
       theNodeBefore.next = null;
       this.tail = targetNode;
-      this.size--;
+      this.listSize--;
       return true;
     }
 
     theNodeBefore.next = targetNode.next;
-    this.size--;
+    this.listSize--;
     return true;
   }
   
@@ -271,7 +168,199 @@ class LinkedList {
 
 class Node {
   constructor(value) {
-    this.value = null;
+    this.value = value;
     this.next = null;
   }
 }
+
+class HashMap {
+  constructor() {
+    this.numBuckets = 16;    
+    this.buckets = new Array(this.numBuckets).fill(null).map(() => new LinkedList());
+    this.bucketsLength = 0;
+    this.DEFAULT_LOAD_FACTOR = 0.75;
+    
+  }
+
+  hash(key) {
+    let hashCode = 0;
+    const PRIME_NUMBER = 31;
+
+    for (let i = 0; i < key.length; i++) {
+      hashCode = PRIME_NUMBER * hashCode + key.charCodeAt(i);
+    }
+    
+    return hashCode;
+  }
+
+  rehash() {
+    let temp = this.buckets;
+    this.numBuckets *= 2; // double the size of the current array;
+    this.buckets = new Array(this.numBuckets).fill(null).map(() => new LinkedList());
+    this.bucketsLength = 0;
+    
+    for (let i = 0; i < this.temp.length; i++) {
+      let head = temp[i].head;
+
+      while (head) {
+        this.set(head.value.key, head.value.value);
+        head = head.next;
+      }
+    } 
+  }
+
+  getBucketInd(key) {
+    return this.hash(key.toString()) % this.numBuckets;  
+  }
+  
+  set(key, value) {
+    const index = this.getBucketInd(key)
+    let linkedList = this.buckets[index];
+
+    if (this.loadFactor() > this.DEFAULT_LOAD_FACTOR) {
+      this.rehash();      
+    }
+    
+    // if the key already exists, override the old value
+    let currentNode = linkedList.head;
+    while (currentNode) {
+      if (currentNode.value.key === key) {
+        currentNode.value.value = value;
+        return;
+      }
+      currentNode = currentNode.next;
+    }
+    
+    linkedList.append({key, value})
+    this.bucketsLength++;
+  }
+
+  loadFactor() {
+    return this.bucketsLength / this.numBuckets;
+  }
+
+  get(key) {
+    const index = this.getBucketInd(key);
+    const linkedList = this.buckets[index];
+
+    let currentNode = linkedList.head;
+    while (currentNode) {
+      if (currentNode.value.key === key) return currentNode.value.value;
+      currentNode = currentNode.next;
+    }  
+
+    return null;
+  }
+
+  has(key) {
+    const index = this.getBucketInd(key);
+    const linkedList = this.buckets[index];
+   
+    if (linkedList.size === 0) return false;
+    return linkedList.contains(key);    
+  }
+
+  remove(key) {
+    if (!this.has(key)) return false;
+
+    const index = this.getBucketInd(key);
+    const linkedList = this.buckets[index];
+    let nodeToRemoveInd = linkedList.find(this.get(key));
+
+    linkedList.removeAt(nodeToRemoveInd);
+    this.bucketsLength--;
+  }
+
+  length() {
+    return this.bucketsLength;
+  }
+
+  clear() {
+    this.numBuckets = 16;
+    this.buckets = new Array(this.numBuckets).fill(null).map(() => new LinkedList());
+    this.bucketsLength = 0;
+  }
+
+  keys() {
+    const keys = [];
+    const buckets = this.buckets;
+
+    for (let i = 0; i < buckets.length; i++) {
+      let linkedList = buckets[i];
+      
+      if (linkedList.size() === 0) continue;
+      
+      let currentNode = linkedList.head;
+      while (currentNode) {
+        keys.push(currentNode.value.key)
+        currentNode = currentNode.next;
+      }
+    }  
+
+    return keys;  
+  }
+
+  values() {
+    const values = [];
+    const buckets = this.buckets;
+
+    for (let i = 0; i < buckets.length; i++) {
+      let linkedList = buckets[i];
+      
+      if (linkedList.size() === 0) continue;
+      
+      let currentNode = linkedList.head;
+      while (currentNode) {
+        values.push(currentNode.value.value)
+        currentNode = currentNode.next;
+      }
+    }  
+
+    return values;  
+  }
+
+  entries() {
+    const entries = [];
+    const buckets = this.buckets;
+
+    for (let i = 0; i < buckets.length; i++) {
+      let linkedList = buckets[i];
+      
+      if (linkedList.size() === 0) continue;
+      
+      let currentNode = linkedList.head;
+      while (currentNode) {
+        entries.push([currentNode.value.key, currentNode.value.value])
+        currentNode = currentNode.next;
+      }
+    }  
+
+    return entries;  
+  }
+}
+
+//=========TESTS=======//
+const map = new HashMap();
+
+// Add some key-value pairs to the map
+map.set("apple", 10);
+map.set("banana", 20);
+map.set("orange", 30);
+map.set("grape", 40);
+map.set("melon", 50);
+
+console.log("Value of 'apple':", map.get("apple")); // Should print: Value of 'apple': 10
+console.log("Value of 'banana':", map.get("banana")); // Should print: Value of 'banana': 20
+console.log("Value of 'watermelon':", map.get("watermelon")); // Should print: Value of 'watermelon': null
+console.log("Does 'apple' exist?", map.has("apple")); // Should print: Does 'apple' exist? true
+console.log("Does 'watermelon' exist?", map.has("watermelon")); // Should print: Does 'watermelon' exist? false
+console.log("Removing 'banana'");
+
+map.remove("banana");
+
+console.log("Value of 'banana' after removal:", map.get("banana")); // Should print: Value of 'banana' after removal: null
+console.log("Length of the map:", map.length()); // Should print: Length of the map: 4
+console.log("Keys in the map:", map.keys()); // Should print: Keys in the map: [ 'apple', 'orange', 'grape', 'melon' ]
+console.log("Values in the map:", map.values()); // Should print: Values in the map: [ 10, 30, 40, 50 ]
+console.log("Entries in the map:", map.entries()); // Should print: Entries in the map: [ [ 'apple', 10 ], [ 'orange', 30 ], [ 'grape', 40 ], [ 'melon', 50 ] ]
+
