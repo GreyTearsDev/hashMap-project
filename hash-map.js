@@ -63,8 +63,6 @@ class LinkedList {
 
     return currentNode;
   }
-  
-  
 
   pop() {
     if (this.listSize === 0) return false;
@@ -119,7 +117,7 @@ class LinkedList {
       currentNode = currentNode.next;
     }
     
-    return string
+    return string;
   }
 
   insertAt(value, index) {
@@ -128,7 +126,13 @@ class LinkedList {
       this.listSize++;
       return true;
     }
-    
+  
+    if (index + 1 >= this.listSize) {
+      this.append(value);
+      this.listSize++;
+      return true;
+    } 
+      
     let newNode = new Node(value);
     let theNodeBefore = this.at(index);
     let theNodeAfter = this.at(index + 1);
@@ -173,6 +177,7 @@ class Node {
   }
 }
 
+//===========HASH-MAP IMPLEMENTATION=============//
 class HashMap {
   constructor() {
     this.numBuckets = 16;    
@@ -302,7 +307,7 @@ class HashMap {
 
   values() {
     const values = [];
-    const buckets = this.buckets;
+    const buckets = this.buckets
 
     for (let i = 0; i < buckets.length; i++) {
       let linkedList = buckets[i];
