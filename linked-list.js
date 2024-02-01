@@ -65,12 +65,12 @@ class LinkedList {
     if (this.listSize === 0) {
       this.head = newNode;
       this.tail = newNode;
-      this.currentNode = newNode;
     } else {
-      this.currentNode.next = newNode;
-      this.currentNode = newNode;
+      this.tail.next = newNode;
+      this.tail = newNode;
     }
 
+    this.currentNode = newNode;
     this.listSize++;
   }
 
@@ -81,14 +81,12 @@ class LinkedList {
   prepend(value) {
     let newNode = new Node(value);
 
-    this.head = newNode;
-
     if (this.listSize !== 0) {
-      newNode.next = this.currentNode;
+      newNode.next = this.head;
     } else {
       this.tail = newNode;
     }
-
+    this.head = newNode;
     this.currentNode = newNode;
     this.listSize++;
   }
